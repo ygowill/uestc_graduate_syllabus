@@ -1,0 +1,2 @@
+# uestc_graduate_syllabus
+tampermonkey脚本，一键导出研究生系统课表的ics文件
