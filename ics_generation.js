@@ -38,8 +38,8 @@
         return fmt;
     }
  
-    const start_monday_date = new Date("2021-03-01");
-    let week_date_table = [];
+    const start_monday_date = new Date("2021-03-01"); // 实在是不知道从哪里找每学期第一个周一的日期，只能硬编码了
+    let week_date_table = []; // 生成本学期所有日期，默认到20周结束
     for (let i = 0; i < 20; i++) {
         let week_arr = []
         for (let j = 0; j < 7; j++) {
@@ -50,7 +50,7 @@
         week_date_table.push(week_arr);
     }
  
-    let timeTable = [
+    let timeTable = [ // 硬编码时间表
         ["08:30", "09:15"], // startTime, endTime
         ["09:20", "10:05"],
         ["10:20", "11:05"],
@@ -65,7 +65,7 @@
         ["22:00", "22:45"]
     ];
  
-    function generate_button() {
+    function generate_button() { // 按钮生成
         let tool_bar = document.getElementsByClassName("widget-toolbar")[0];
         let return_button = document.querySelector("#main-container > div > div > div.page-content > div > div.widget-header.widget-header-large > div > button:nth-child(2)");
         let download_ics = document.createElement("button");
