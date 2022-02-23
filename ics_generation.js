@@ -34,7 +34,7 @@
         return fmt;
     }
  
-    const start_monday_date = new Date("2021-03-01"); // 实在是不知道从哪里找每学期第一个周一的日期，只能硬编码了
+    const start_monday_date = new Date("2022-02-21"); // 实在是不知道从哪里找每学期第一个周一的日期，只能硬编码了
     let week_date_table = []; // 生成本学期所有日期，默认到20周结束
     for (let i = 0; i < 20; i++) {
         let week_arr = []
