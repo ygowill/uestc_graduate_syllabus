@@ -39,9 +39,7 @@
 
 #### 方法2
 
-1. 访问该[网站](https://routinehub.co/shortcut/7005/)，或手机扫描下面的二维码添加快捷指令(Shortcut)，对于初次使用快捷指令的用户而言，请随便选一个原来就有的快捷指令的执行一遍，然后打开设置中的允许不守信任的快捷指令，才可以运行这个快捷指令。
-
-   ![image-20210305172914057](https://gitee.com/ygowill/pic_bed/raw/master/blog/20210305172914.png)
+1. 访问该[网站](https://routinehub.co/shortcut/7005/)，对于初次使用快捷指令的用户而言，请随便选一个原来就有的快捷指令的执行一遍，然后打开设置中的允许不守信任的快捷指令，才可以运行这个快捷指令。
 
 2. 然后利用QQ或者微信将电脑上导出的ICS文件发送到手机，选择用其他应用打开后，点下面的ICS To Calendar
 
@@ -55,8 +53,3 @@
 
 可以在电脑上通过QQ，微信等应用将导出的ics文件传到手机，点击即可加入日历
 
-
-
-### IOS日历效果
-
-![7A82CF4D0B55C0786C1C05B5D3A621FA](https://gitee.com/ygowill/pic_bed/raw/master/blog/20210304135702.png)
