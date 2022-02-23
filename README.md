@@ -16,7 +16,7 @@
 
 ## 使用方法
 
-1. 在chrome中安装完tampermonkey之后，点击[此处](https://greasyfork.org/zh-CN/scripts/422597-uestc-%E7%A0%94%E7%A9%B6%E7%94%9F%E8%AF%BE%E8%A1%A8ics%E5%AF%BC%E5%87%BA)进入Greasy Fork安装本插件。
+1. 在chrome中安装完tampermonkey之后，点击[此处](https://greasyfork.org/zh-CN/scripts/440489-uestc-%E7%A0%94%E7%A9%B6%E7%94%9F%E8%AF%BE%E8%A1%A8ics%E5%AF%BC%E5%87%BA)进入Greasy Fork安装本插件。
 
 2. 进入研究生系统 -> 个人课表查询，可以在右上角找到导出ics的按钮，如下图所示，点击即可导出下载。![img](https://greasyfork.s3.us-east-2.amazonaws.com/2o5d0zmn7naqyxq4nwj3gy0oleh1)
 
