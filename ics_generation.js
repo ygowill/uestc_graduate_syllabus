@@ -1,17 +1,29 @@
 // ==UserScript==
 // @name         UESTC 研究生课表ics导出
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  一键导出课表的ics文件，方便各系统加入原生日历应用
 // @author       ygowill
 // @match        https://yjsjy.uestc.edu.cn/pyxx/pygl/xskbcx/index/*
-// @require      https://cdn.jsdelivr.net/gh/nwcell/ics.js@dfec67f37a3c267b3f97dd229c9b6a3521222794/demo/ics.deps.min.js
+// @require      https://cdn.jsdelivr.net/npm/ics-browser-gen@0.1.3/ics.deps.min.js
+// @require      https://cdn.jsdelivr.net/npm/pikaday@1.8.2/pikaday.min.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
  
 (function () {
     'use strict';
+
+    function addStyle(stylePath) {
+        var container = document.getElementsByTagName("head")[0];
+        var addStyle = document.createElement("link");
+        addStyle.rel = "stylesheet";
+        addStyle.type = "text/css";
+        addStyle.media = "screen";
+        addStyle.href = stylePath;
+        container.appendChild(addStyle);
+    }
+    addStyle('https://cdn.jsdelivr.net/npm/pikaday@1.8.2/css/pikaday.css');
  
     Date.prototype.format = function (fmt) {
         var o = {
@@ -34,17 +46,8 @@
         return fmt;
     }
  
-    const start_monday_date = new Date("2022-02-21"); // 实在是不知道从哪里找每学期第一个周一的日期，只能硬编码了
-    let week_date_table = []; // 生成本学期所有日期，默认到20周结束
-    for (let i = 0; i < 20; i++) {
-        let week_arr = []
-        for (let j = 0; j < 7; j++) {
-            let tmp_date = new Date(start_monday_date);
-            tmp_date.setDate(tmp_date.getDate() + 7 * i + j);
-            week_arr.push(tmp_date);
-        }
-        week_date_table.push(week_arr);
-    }
+    let start_monday_date = new Date("2022-02-21");
+    let week_date_table = []; // 本学期所有日期，默认到20周结束
  
     let timeTable = [ // 硬编码时间表
         ["08:30", "09:15"], // startTime, endTime
@@ -63,14 +66,35 @@
  
     function generate_button() { // 按钮生成
         let tool_bar = document.getElementsByClassName("widget-toolbar")[0];
+        let headline = document.querySelector('#main-container > div > div > div.page-content > div > div.widget-header.widget-header-large');
+        let description = document.createElement("description");
+        description.innerHTML = "<h5>请在右侧选择本学期第一周周一的日期后再下载ics文件</h5>";
+        headline.appendChild(description);
         let return_button = document.querySelector("#main-container > div > div > div.page-content > div > div.widget-header.widget-header-large > div > button:nth-child(2)");
         let download_ics = document.createElement("button");
+        let datepicker = document.createElement("datepicker");
         download_ics.type = "button";
         download_ics.style = "margin-top: 5px; margin-right: 5px;";
         download_ics.className = "btn btn-xs btn-return ";
         download_ics.innerHTML = "<i class=\"icon-hdd  align-top bigger-150\"></i>导出ics文件";
         download_ics.addEventListener("click", parse_table, false);
         tool_bar.insertBefore(download_ics, return_button);
+        var picker = new Pikaday({
+            onSelect: function(date) {
+                start_monday_date = date;
+                week_date_table = [];
+                for (let i = 0; i < 20; i++) {
+                    let week_arr = []
+                    for (let j = 0; j < 7; j++) {
+                        let tmp_date = new Date(start_monday_date);
+                        tmp_date.setDate(tmp_date.getDate() + 7 * i + j);
+                        week_arr.push(tmp_date);
+                    }
+                    week_date_table.push(week_arr);
+                }
+            }
+        });
+        tool_bar.insertBefore(picker.el, download_ics);
     }
  
     function parse_table() {
