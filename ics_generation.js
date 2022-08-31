@@ -10,7 +10,7 @@
 // @grant        none
 // @license      MIT
 // ==/UserScript==
- 
+
 (function () {
     'use strict';
 
@@ -24,7 +24,7 @@
         container.appendChild(addStyle);
     }
     addStyle('https://cdn.jsdelivr.net/npm/pikaday@1.8.2/css/pikaday.css');
- 
+
     Date.prototype.format = function (fmt) {
         var o = {
             "M+": this.getMonth() + 1, //月份
@@ -45,10 +45,10 @@
         }
         return fmt;
     }
- 
+
     let start_monday_date = new Date("2022-02-21");
     let week_date_table = []; // 本学期所有日期，默认到20周结束
- 
+
     let timeTable = [ // 硬编码时间表
         ["08:30", "09:15"], // startTime, endTime
         ["09:20", "10:05"],
@@ -63,7 +63,7 @@
         ["21:10", "21:55"],
         ["22:00", "22:45"]
     ];
- 
+
     function generate_button() { // 按钮生成
         let tool_bar = document.getElementsByClassName("widget-toolbar")[0];
         let headline = document.querySelector('#main-container > div > div > div.page-content > div > div.widget-header.widget-header-large');
@@ -80,7 +80,7 @@
         download_ics.addEventListener("click", parse_table, false);
         tool_bar.insertBefore(download_ics, return_button);
         var picker = new Pikaday({
-            onSelect: function(date) {
+            onSelect: function (date) {
                 start_monday_date = date;
                 week_date_table = [];
                 for (let i = 0; i < 20; i++) {
@@ -96,7 +96,7 @@
         });
         tool_bar.insertBefore(picker.el, download_ics);
     }
- 
+
     function parse_table() {
         let cal = ics();
         let table = document.querySelector("#tbl > tbody");
@@ -115,23 +115,28 @@
                 let course_list = course_info.split("，");
                 for (let course of course_list) { // info example: "0808126007/大数据分析与挖掘(全英文)/40/2/邵俊明/1-10周/(1~2)/品学楼B107"
                     let c_list = course.split("/");
+                    let list_len = c_list.length
                     let course_id = c_list[0].trim();
-                    let week_str = c_list[5];
+                    let week_str = c_list[list_len - 3];
                     week_str = week_str.substring(0, week_str.length - 1);
-                    let time_str = c_list[6];
+                    let time_str = c_list[list_len - 2];
                     time_str = time_str.substring(1, time_str.length - 1);
                     let start_week = parseInt(week_str.split("-")[0]);
                     let end_week = parseInt(week_str.split("-")[1]);
                     if (!course_map.has(course_id)) {
                         course_map.set(course_id, new Map());
                         course_map.get(course_id).set("course_id", course_id);
-                        course_map.get(course_id).set("name", c_list[1]);
-                        course_map.get(course_id).set("teacher", c_list[4]);
+                        let course_name = [];
+                        for (let i = 1; i < list_len - 6; i++) {
+                            course_name.push(c_list[i]);
+                        }
+                        course_map.get(course_id).set("name", course_name.join("/"));
+                        course_map.get(course_id).set("teacher", c_list[list_len - 4]);
                         course_map.get(course_id).set("start_time", timeTable[parseInt(time_str.split("~")[0]) - 1][0]);
                         course_map.get(course_id).set("end_time", timeTable[parseInt(time_str.split("~")[1]) - 1][1]);
-                        course_map.get(course_id).set("location", c_list[7]);
+                        course_map.get(course_id).set("location", c_list[list_len - 1]);
                     }
- 
+
                     if (week_map.has(course_id)) {
                         week_map.get(course_id).set("min", Math.min(start_week, week_map.get(course_id).get("min")));
                         week_map.get(course_id).set("max", Math.max(end_week, week_map.get(course_id).get("max")));
@@ -141,24 +146,25 @@
                         week_map.get(course_id).set("max", end_week);
                     }
                 }
- 
+
+
                 for (let course of course_map.values()) {
                     const start_week = parseInt(week_map.get(course.get("course_id")).get("min"));
                     const end_week = parseInt(week_map.get(course.get("course_id")).get("max"));
- 
-                    for (let i=start_week;i<=end_week;i++) {
+
+                    for (let i = start_week; i <= end_week; i++) {
                         let description = "任课教师：" + course.get("teacher") + "  周：" + start_week + "-" + end_week;
                         // 起止时间
                         let start_time = new Date(start_monday_date);
                         start_time.setDate(start_time.getDate() + (i - 1) * 7 + day);
                         start_time.setHours(course.get("start_time").split(":")[0]);
                         start_time.setMinutes(course.get("start_time").split(":")[1]);
- 
+
                         let end_time = new Date(start_monday_date);
                         end_time.setDate(end_time.getDate() + (i - 1) * 7 + day);
                         end_time.setHours(course.get("end_time").split(":")[0]);
                         end_time.setMinutes(course.get("end_time").split(":")[1]);
- 
+
                         cal.addEvent(course.get("name"), description, course.get("location"), start_time.toUTCString(), end_time.toUTCString());
                     }
                 }
@@ -166,6 +172,6 @@
         }
         cal.download();
     }
- 
+
     generate_button();
 })();
