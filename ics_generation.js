@@ -112,7 +112,7 @@
                     continue;
                 }
                 let course_map = new Map();
-                let course_list = course_info.split("，");
+                let course_list = course_info.split(/， /);
                 for (let course of course_list) { // info example: "0808126007/大数据分析与挖掘(全英文)/40/2/邵俊明/1-10周/(1~2)/品学楼B107"
                     let c_list = course.split("/");
                     let list_len = c_list.length
@@ -130,11 +130,13 @@
                         for (let i = 1; i < list_len - 6; i++) {
                             course_name.push(c_list[i]);
                         }
-                        course_map.get(course_id).set("name", course_name.join("/"));
+                        let course_name_full = course_name.join('/')
+                        course_map.get(course_id).set("name", course_name_full.replace(/(\([\S\s]+\))/g, ''));
                         course_map.get(course_id).set("teacher", c_list[list_len - 4]);
                         course_map.get(course_id).set("start_time", timeTable[parseInt(time_str.split("~")[0]) - 1][0]);
                         course_map.get(course_id).set("end_time", timeTable[parseInt(time_str.split("~")[1]) - 1][1]);
                         course_map.get(course_id).set("location", c_list[list_len - 1]);
+                        course_map.get(course_id).set("info", course_name_full.match(/(\([\S\s]+\))/g)[0].replaceAll(/[\(\)]/g, ''));
                     }
 
                     if (week_map.has(course_id)) {
@@ -152,21 +154,21 @@
                     const start_week = parseInt(week_map.get(course.get("course_id")).get("min"));
                     const end_week = parseInt(week_map.get(course.get("course_id")).get("max"));
 
-                    for (let i = start_week; i <= end_week; i++) {
-                        let description = "任课教师：" + course.get("teacher") + "  周：" + start_week + "-" + end_week;
-                        // 起止时间
-                        let start_time = new Date(start_monday_date);
-                        start_time.setDate(start_time.getDate() + (i - 1) * 7 + day);
-                        start_time.setHours(course.get("start_time").split(":")[0]);
-                        start_time.setMinutes(course.get("start_time").split(":")[1]);
+                    let description = `任课教师：${course.get("teacher")}\\n周：${start_week}-${end_week}\\n信息：${course.get("info")}`;
+                    // 起止时间
+                    let start_time = new Date(start_monday_date);
+                    start_time.setDate(start_time.getDate() + (start_week - 1) * 7 + day);
+                    start_time.setHours(course.get("start_time").split(":")[0]);
+                    start_time.setMinutes(course.get("start_time").split(":")[1]);
 
-                        let end_time = new Date(start_monday_date);
-                        end_time.setDate(end_time.getDate() + (i - 1) * 7 + day);
-                        end_time.setHours(course.get("end_time").split(":")[0]);
-                        end_time.setMinutes(course.get("end_time").split(":")[1]);
-
-                        cal.addEvent(course.get("name"), description, course.get("location"), start_time.toUTCString(), end_time.toUTCString());
-                    }
+                    let end_time = new Date(start_monday_date);
+                    end_time.setDate(end_time.getDate() + (start_week - 1) * 7 + day);
+                    end_time.setHours(course.get("end_time").split(":")[0]);
+                    end_time.setMinutes(course.get("end_time").split(":")[1]);
+                    let rrule = new Object()
+                    rrule.freq = "WEEKLY"
+                    rrule.count = end_week - start_week + 1
+                    cal.addEvent(course.get("name"), description, course.get("location"), start_time.toUTCString(), end_time.toUTCString(), rrule);
                 }
             }
         }
